@@ -9,8 +9,8 @@ def main():
     
     print("Simulating agent steps...\n")
     
-    for i in range(1, 9):
-        if i < 5:
+    for i in range(1, 11):
+        if i < 4:
             tool_name = f"query_db_table_{i}"
             tool_args = {"table_id": i}
             error = None
@@ -22,7 +22,7 @@ def main():
         tracker.record_step(
             tool_name=tool_name,
             tool_args=tool_args,
-            tool_result="Success" if error is None else "Error",
+            tool_result="Success" if error is None else "error",
             token_count=100 + i * 10,
             error=error
         )

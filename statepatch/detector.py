@@ -2,7 +2,7 @@ from typing import List
 from .models import StepRecord
 
 class LoopDetector:
-    def __init__(self, alpha: float = 0.3, stall_threshold: float = 0.85, diverge_threshold: float = 1.10):
+    def __init__(self, alpha: float = 0.6, stall_threshold: float = 0.85, diverge_threshold: float = 1.10):
         self.alpha = alpha
         self.stall_threshold = stall_threshold
         self.diverge_threshold = diverge_threshold
@@ -19,23 +19,21 @@ class LoopDetector:
                 "step_count": step_count
             }
 
-        # Count consecutive identical tool_name + tool_args combinations
-        # at the end of the steps list
-        consecutive_repeats = 0
+        # Count matching steps in the last 5 steps (sliding window)
         last_step = steps[-1]
-        
-        for step in reversed(steps):
-            if step.tool_name == last_step.tool_name and step.tool_args == last_step.tool_args:
-                consecutive_repeats += 1
-            else:
-                break
+        window = steps[-5:]
+        matching_count = sum(
+            1 for step in window 
+            if step.tool_name == last_step.tool_name and step.tool_args == last_step.tool_args
+        )
+        consecutive_repeats = matching_count
                 
         # Calculate error_ratio
         error_count = sum(1 for step in steps if step.error is not None)
         error_ratio = error_count / step_count
         
         # Calculate a smoothed gain score
-        gain = consecutive_repeats / max(step_count, 1)
+        gain = matching_count / 5.0
         smoothed = self.alpha * gain + (1 - self.alpha) * self.previous_smoothed
         self.previous_smoothed = smoothed
         

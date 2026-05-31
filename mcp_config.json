@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "statepatch": {
+      "command": "python",
+      "args": ["C:/Users/vinay/Downloads/StatePatch AI/mcp_server.py"],
+      "description": "StatePatch AI — live loop detection for AI agents"
+    }
+  }
+}
